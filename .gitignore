@@ -47,3 +47,6 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+test.R
+ONSPD_Online_Latest_Centroids_1060347089026503474.csv
+.DS_Store
