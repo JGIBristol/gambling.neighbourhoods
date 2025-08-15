@@ -3,7 +3,7 @@
 This repository contains code and data (just gambling data for now, as geographic is too large for this repo) for analyzing gambling premises in neighbourhoods.
 
 ## Proof of Concept (PoC)
-The poc.R file is a PoC script that reads in gambling premises data and geographical data, cleans it, and performs HDBSCAN clustering.
+The `poc.R` file is a PoC script that reads in gambling premises data and geographical data, cleans it, and performs HDBSCAN clustering.
 
 Some of the key steps include:
 1. Loading necessary libraries.
