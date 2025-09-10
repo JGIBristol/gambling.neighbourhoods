@@ -70,10 +70,10 @@ coord <- as.data.frame(sp::coordinates(xy))
 wss <- (nrow(coord)-1)*sum(apply(coord,2,var))
 
 K=50
-for (i in 2:K) wss[i] <- sum(kmeans(coord,centers=i)$withinss)
+for (i in 2:K) wss[i] <- sum(kmeans(coord,centers = i)$withinss)
 
 pdf("figures/elbow_plot.pdf")
-plot(1:K, wss, type="b", xlab="Number of Clusters",
+plot(1:K, wss, type="b", xlab="K",
      ylab="Within groups sum of squares")
 dev.off()
 
@@ -88,10 +88,11 @@ saveRDS(c(res,mdist), file = "data/hdbscan_results.rds")
 
 
 
-pdf("figures/hdbscan_plot.pdf")
-
-dbscan::hullplot(mdist, res, title = "HDBSCAN Clustering of Gambling Premise (minPts = 10)")
+pdf("figures/hdbscan_hullplot.pdf")
+dbscan::hullplot(mdist, res, main = "HDBSCAN Clustering of Gambling Premises (minPts = 10)")
 dev.off()
 
-dbscan::clplot(mdist, res, main = "HDBSCAN Clustering of Gambling Premise (minPts = 10)")
+pdf("figures/hdbscan_clplot.pdf")
+dbscan::clplot(mdist, res, main = "HDBSCAN Clustering of Gambling Premises (minPts = 10)")
 
+dev.off()
