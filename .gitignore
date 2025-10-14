@@ -21,9 +21,7 @@
 # RStudio files
 .Rproj.user/
 
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
+
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
@@ -50,3 +48,13 @@ rsconnect/
 test.R
 ONSPD_Online_Latest_Centroids_1060347089026503474.csv
 .DS_Store
+data/hdbscan_results.rds
+*.rds
+data/hdbscan_results.rds
+data/hdbscan_results.rds
+inst/doc
+dev
+*.Rproj
+remote.sh
+data
+gambling.Rproj

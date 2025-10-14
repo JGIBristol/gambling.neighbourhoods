@@ -1,0 +1,31 @@
+Package: gambling.neighbourhoods
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000 
+Authors@R: 
+    person("Rita", "Rasteiro", , "rita.rasteiro@bristol.ac.uk", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-4217-3060")) 
+Description: Package for analyzing and visualizing gambling premises in urban environments.
+License: MIT + file LICENSE
+URL: https://github.com/JGIBristol/gambling.neighbourhoods
+BugReports: https://github.com/JGIBristol/gambling.neighbourhoods/issues
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends:
+    R (>= 4.0.0),
+    leaflet,
+    dplyr
+Imports:
+    sp,
+Suggests: 
+    ggplot2,
+    sf,
+    htmlwidgets,
+    htmltools,
+    testthat,
+    devtools,
+    usethis,
+    roxygen2,  
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr

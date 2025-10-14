@@ -12,10 +12,9 @@ library(dbscan)
 # Load ggplot2 for plotting
 library(ggplot2)
 
-
+# setwd("/home/ar17162/Documents/gambling_neighbourhoods")
 # read geo data
 gc <- read.csv("data/premises-licence-register_06082025.csv", header = TRUE)
-
 geo <- read.csv("data/ONSPD_Online_Latest_Centroids_1060347089026503474.csv", header = TRUE)
 
 
@@ -58,14 +57,18 @@ xy <- sp::SpatialPointsDataFrame(
   data.frame(ID=data$ID),
   proj4string=sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84"))
 
+saveRDS(xy,file = "data/xy.rds")
+print("SpatialPointsDataFrame saved to data/xy.rds")
+
 
 # 2. Generate a distance matrix.
 mdist <- geosphere::distm(xy)
 
-
+saveRDS(mdist,file = "data/mdist.rds")
+print("Distance matrix saved to data/mdist.rds")
 # 3. Run HDBSCAN clustering
 
-# elbow test for optimal number of clusters
+elbow test for optimal number of clusters
 coord <- as.data.frame(sp::coordinates(xy))
 wss <- (nrow(coord)-1)*sum(apply(coord,2,var))
 
@@ -80,19 +83,14 @@ dev.off()
 # HDBSCAN clustering
 # Using Sys.time to measure execution time
 # trying with minPts = 10
-Sys.time()
-res <- dbscan::hdbscan(mdist, minPts = 10, verbose = TRUE)
-Sys.time()
-
-saveRDS(c(res,mdist), file = "data/hdbscan_results.rds")
 
 
+for (K in 2:5) {
+  Sys.time()
+  print(paste("K =", K))
+  res <- dbscan::hdbscan(mdist, minPts = K, verbose = TRUE)
+  saveRDS(c(res), file = paste0("data/hdbscan_results_", K, ".rds"))
+  print(paste0("HDBSCAN results saved to data/hdbscan_results_", K, ".rds"))
+  Sys.time()
+}
 
-pdf("figures/hdbscan_hullplot.pdf")
-dbscan::hullplot(mdist, res, main = "HDBSCAN Clustering of Gambling Premises (minPts = 10)")
-dev.off()
-
-pdf("figures/hdbscan_clplot.pdf")
-dbscan::clplot(mdist, res, main = "HDBSCAN Clustering of Gambling Premises (minPts = 10)")
-
-dev.off()
