@@ -46,13 +46,11 @@ rsconnect/
 test.R
 ONSPD_Online_Latest_Centroids_1060347089026503474.csv
 .DS_Store
-data/hdbscan_results.rds
-*.rds
-data/hdbscan_results.rds
-data/hdbscan_results.rds
 inst/doc
 dev
 *.Rproj
 remote.sh
-data
 gambling.Rproj
+mdist.rds
+/vignettes/data
+*.rds
