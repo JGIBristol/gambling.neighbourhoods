@@ -4,3 +4,6 @@
 ^docs$
 ^poc$
 ^LICENSE\.md$
+^README\.Rmd$
+^results$
+^_pkgdown\.yml$

@@ -1,0 +1,22 @@
+url: ~
+template:
+  bootstrap: 5
+  bootswatch: sandstone
+
+navbar:
+ structure:
+    left:  [reference, articles, news]
+    right: [search, github]
+ components:
+   articles:
+      text: vignettes
+      menu:
+      - text: "Gambling neighbourhoods maps"
+        href: articles/Leaflet-maps.html
+   reference:
+      text: Functions
+      href: reference/index.html
+   news:
+      text: Changelog
+      href: news/index.html
+
