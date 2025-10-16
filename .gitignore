@@ -37,10 +37,6 @@
 # R Environment Variables
 .Renviron
 
-
-# translation temp files
-po/*~
-
 # RStudio Connect folder
 rsconnect/
 test.R
@@ -50,7 +46,8 @@ inst/doc
 dev
 *.Rproj
 remote.sh
-gambling.Rproj
 mdist.rds
 /vignettes/data
 *.rds
+results/
+.gitignore
