@@ -11,6 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   echo = TRUE,
+  eval = TRUE, # change to TRUE to produce the vignette and FALSE for the package build
   comment = "#>"
 )
 ```
@@ -45,7 +46,7 @@ xy <- readRDS("data/xy.rds")
 
 Load dataframe with coordinates and cluster assignments
 ```{r k2, message=FALSE}
-res2 <- readRDS("data/hdbscan_results_2.rds")
+res2 <- readRDS("results/hdbscan_results_2.rds")
 # Create a data frame from the spatial points
 df2 <- create_df(res2,xy)
 head(df2)
@@ -70,14 +71,14 @@ Leaflet map for MinPts=2
 cluster_hulls2 <- get_cluster_hulls(df2)
 # Create the leaflet map
 map2 <-leaflet_map(cluster_hulls2, df2, df2_null)
-# saveWidget(map2, file="data/map_MinPt2.html")
+# saveWidget(map2, file="results/map_MinPt2.html")
 map2
 
 ```
 ## MinPts=3
 Load dataframe with coordinates and cluster assignments
 ```{r k3, message=FALSE}
-res3 <- readRDS("data/hdbscan_results_3.rds")
+res3 <- readRDS("results/hdbscan_results_3.rds")
 # Create a data frame from the spatial points
 df3 <- create_df(res3,xy)
 head(df3)
@@ -100,13 +101,13 @@ Leaflet map for MinPts=3
 cluster_hulls3 <- get_cluster_hulls(df3) 
 # Create the leaflet map
 map3 <-leaflet_map(cluster_hulls3, df3, df3_null)
-# saveWidget(map3, file="data/map_MinPt3.html")
+# saveWidget(map3, file="results/map_MinPt3.html")
 map3
 ``` 
 ## MinPts=4
 Load dataframe with coordinates and cluster assignments
 ```{r k4, message=FALSE}
-res4 <- readRDS("data/hdbscan_results_4.rds")
+res4 <- readRDS("results/hdbscan_results_4.rds")
 # Create a data frame from the spatial points
 df4 <- create_df(res4,xy)   
 head(df4)
@@ -135,7 +136,7 @@ map4
 ## MinPts=5
 Load dataframe with coordinates and cluster assignments
 ```{r k5, message=FALSE}
-res5 <- readRDS("data/hdbscan_results_5.rds")
+res5 <- readRDS("results/hdbscan_results_5.rds")
 # Create a data frame from the spatial points
 df5 <- create_df(res5,xy)   
 head(df5)   
@@ -158,14 +159,14 @@ Leaflet map for MinPts=5
 cluster_hulls5 <- get_cluster_hulls(df5) 
 # Create the leaflet map    
 map5 <-leaflet_map(cluster_hulls5, df5, df5_null)
-#saveWidget(map5, file="data/map_MinPt5.html")
+#saveWidget(map5, file="results/map_MinPt5.html")
 map5
 ``` 
 
 ## MinPts=10
 Load dataframe with coordinates and cluster assignments
 ```{r k10, message=FALSE}
-res10 <- readRDS("data/hdbscan_results_10.rds")
+res10 <- readRDS("results/hdbscan_results_10.rds")
 # Create a data frame from the spatial points
 df10 <- create_df(res10,xy)   
 head(df10)   
@@ -185,22 +186,24 @@ n_noise_k10
 Leaflet map for MinPts=10
 ```{r leaflet-map-k10, echo=FALSE, message=FALSE}
 # Get the convex hulls for each cluster
-cluster_hulls10 <- get_cluster_hulls(df10)
-
+cluster_hulls10 <- get_cluster_hulls(df10) 
 # Create the leaflet map    
 map10 <-leaflet_map(cluster_hulls10, df10, df10_null)
-# saveWidget(map10, file="data/map_MinPt10.html")
+#saveWidget(map10, file="results/map_MinPt10.html")
 map10
 ```
+<br>
 
+## Summary statistics for HDBSCAN clustering with various MinPts values
 
-## Summary of number of clusters for each MinPt
+<br>
+
 ```{r summary-clusters, echo=FALSE, message=FALSE}
 
 tab <- data.frame(MinPts = c(2, 3, 4, 5, 10),
           N_clusters = c(k2, k3, k4, k5, k10),
-           N_noise_points = c(n_noise_k2, n_noise_k3, n_noise_k4, n_noise_k5, n_noise_k10),
-           Max_cluster_size = c(max(df2$Pop[df2$cluster != 0]),
+          N_noise_points = c(n_noise_k2, n_noise_k3, n_noise_k4, n_noise_k5, n_noise_k10),
+          Max_cluster_size = c(max(df2$Pop[df2$cluster != 0]),
                                 max(df3$Pop[df3$cluster != 0]),
                                 max(df4$Pop[df4$cluster != 0]),
                                 max(df5$Pop[df5$cluster != 0]),
@@ -213,7 +216,27 @@ tab <- data.frame(MinPts = c(2, 3, 4, 5, 10),
 
            )
 
-knitr::kable(tab, caption = "For each MinPts value, summary of number of clusters, number of noise points (unclustered), maximum and minimum number of gambling premises per cluster.")
+# Format the table with better styling and more descriptive column names
+knitr::kable(
+  tab %>% 
+    rename(
+      "MinPts Parameter" = MinPts,
+      "Number of Clusters" = N_clusters,
+      "Unclustered Points" = N_noise_points,
+      "Largest Cluster Size" = Max_cluster_size,
+      "Smallest Cluster Size" = Min_cluster_size
+    ),
+  # caption = "Summary statistics for HDBSCAN clustering with various MinPts values",
+  align = "c",
+  digits = 0,
+  format = "html",
+) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE
+  ) %>%
+  kableExtra::row_spec(which.max(tab$N_clusters), bold = TRUE, background = "#e6f7ff") %>%
+  kableExtra::row_spec(which.min(tab$N_noise_points), bold = TRUE, background = "#e6fff7")
 ```
 
 <br>
