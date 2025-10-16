@@ -17,8 +17,6 @@ library(ggplot2)
 gc <- read.csv("data/premises-licence-register_06082025.csv", header = TRUE)
 geo <- read.csv("data/ONSPD_Online_Latest_Centroids_1060347089026503474.csv", header = TRUE)
 
-
-
 #' Function to clean data by merging gc_data with geo_data
 #' @param gc_data Data frame containing gambling premises data
 #' @param geo_data Data frame containing geographical data
@@ -53,7 +51,7 @@ data <- clean_data(gc,geo)
 
 # 1. Make spatialpointsdataframe
 xy <- sp::SpatialPointsDataFrame(
-  matrix(c(data$LAT, data$LONG),ncol=2),
+  matrix(c(data$LONG, data$LAT),ncol=2),
   data.frame(ID=data$ID),
   proj4string=sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84"))
 
@@ -62,35 +60,35 @@ print("SpatialPointsDataFrame saved to data/xy.rds")
 
 
 # 2. Generate a distance matrix.
-mdist <- geosphere::distm(xy)
+coord <- as.data.frame(sp::coordinates(xy))
+mdist <- geosphere::distm(coord)
 
 saveRDS(mdist,file = "data/mdist.rds")
 print("Distance matrix saved to data/mdist.rds")
 # 3. Run HDBSCAN clustering
 
-elbow test for optimal number of clusters
-coord <- as.data.frame(sp::coordinates(xy))
-wss <- (nrow(coord)-1)*sum(apply(coord,2,var))
+# coord <- as.data.frame(sp::coordinates(xy))
+# wss <- (nrow(coord)-1)*sum(apply(coord,2,var))
 
-K=50
-for (i in 2:K) wss[i] <- sum(kmeans(coord,centers = i)$withinss)
+# K=50
+# for (i in 2:K) wss[i] <- sum(kmeans(coord,centers = i)$withinss)
 
-pdf("figures/elbow_plot.pdf")
-plot(1:K, wss, type="b", xlab="K",
-     ylab="Within groups sum of squares")
-dev.off()
+# pdf("figures/elbow_plot.pdf")
+# plot(1:K, wss, type="b", xlab="K",
+#      ylab="Within groups sum of squares")
+# dev.off()
 
 # HDBSCAN clustering
 # Using Sys.time to measure execution time
 # trying with minPts = 10
 
 
-for (K in 2:5) {
+for (MinPts in c(2:5,10)) {
   Sys.time()
-  print(paste("K =", K))
-  res <- dbscan::hdbscan(mdist, minPts = K, verbose = TRUE)
-  saveRDS(c(res), file = paste0("data/hdbscan_results_", K, ".rds"))
-  print(paste0("HDBSCAN results saved to data/hdbscan_results_", K, ".rds"))
+  print(paste("MinPts =", MinPts))
+  res <- dbscan::hdbscan(mdist, minPts = MinPts, verbose = TRUE)
+  saveRDS(c(res), file = paste0("results/hdbscan_results_", MinPts, ".rds"))
+  print(paste0("HDBSCAN results saved to results/hdbscan_results_", MinPts, ".rds"))
   Sys.time()
 }
 
