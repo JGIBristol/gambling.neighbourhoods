@@ -88,7 +88,7 @@ create_df <- function(res, xy) {
   df <- as.data.frame(sp::coordinates(xy))
   df$cluster <- as.factor(res$cluster)
   df$ID <-  xy@data$ID
-  df <- dplyr::rename(df, LAT = coords.x1, LONG = coords.x2) %>%
+  df <- dplyr::rename(df, LONG = coords.x1, LAT = coords.x2) %>%
     group_by(cluster) %>%
     mutate(Pop = ifelse(cluster == 0, 0, n())) %>%
     ungroup()

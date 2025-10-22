@@ -1,0 +1,238 @@
+---
+title: "DBSCAN_eps500"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{DBSCAN_eps500}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  echo = TRUE,
+  eval = FALSE, # change to TRUE to produce the vignette and FALSE for the package build
+  comment = "#>"
+)
+```
+
+
+```{r setup, echo=FALSE, message=FALSE}
+library(leaflet)
+library(htmltools)
+library(sp)
+library(dplyr)
+library(htmlwidgets)
+# library(gambling.neighbourhoods)
+library(devtools)
+load_all()
+```
+
+
+# Gambling neighbourhoods using DBSCAN and eps=500m
+
+## Load data
+Load the geographical data (spatial points dataframe) containing the coordinates of gambling premises.
+```{r load-data, echo=TRUE, message=FALSE}
+library(devtools)
+load_all()
+xy <- readRDS("data/xy.rds")
+```
+## MinPts=4 with eps=500m 
+Load dataframe with coordinates and cluster assignments
+```{r dbscan_eps500_4, message=FALSE}
+res4_dbscan_eps500 <- readRDS("results/dbscan_results_eps500_MinPts4.rds")
+# Create a data frame from the spatial points
+df4_dbscan_eps500 <- create_df(res4_dbscan_eps500,xy)
+head(df4_dbscan_eps500)
+dim(df4_dbscan_eps500)
+```
+Number of clusters (excluding noise):
+```{r num-clusters-dbscan-eps500_4, message=FALSE}
+k4_dbscan_eps500 <- length(unique(df4_dbscan_eps500$cluster)) - 1
+k4_dbscan_eps500
+```
+Number of noise points:
+```{r num-noise-dbscan-eps500_4, message=FALSE}
+df4_dbscan_eps500_null <- create_df_null(df4_dbscan_eps500)
+n_noise_dbscan_eps500_4 <- nrow(df4_dbscan_eps500_null)
+n_noise_dbscan_eps500_4
+``` 
+Leaflet map for MinPts=4, eps=500m
+
+```{r leaflet-map-k4, message=FALSE}
+# Get the convex hulls for each cluster
+cluster_hulls4 <- get_cluster_hulls(df4_dbscan_eps500)
+# Create the leaflet map
+map4 <-leaflet_map(cluster_hulls4, df4_dbscan_eps500, df4_dbscan_eps500_null)
+# saveWidget(map4, file="results/map_MinPt4.html")
+map4
+```
+
+## MinPts=5 with eps=500m
+Load dataframe with coordinates and cluster assignments
+```{r dbscan_eps500_5, message=FALSE}
+res5_dbscan_eps500 <- readRDS("results/dbscan_results_eps500_MinPts5.rds")
+# Create a data frame from the spatial points
+df5_dbscan_eps500 <- create_df(res5_dbscan_eps500,xy)
+head(df5_dbscan_eps500)
+dim(df5_dbscan_eps500)
+```
+Number of clusters (excluding noise):
+```{r num-clusters-dbscan-eps500_5, message=FALSE}
+k5_dbscan_eps500 <- length(unique(df5_dbscan_eps500$cluster)) - 1
+k5_dbscan_eps500
+```
+Number of noise points:   
+```{r num-noise-dbscan-eps500_5, message=FALSE}
+df5_dbscan_eps500_null <- create_df_null(df5_dbscan_eps500)
+n_noise_dbscan_eps500_5 <- nrow(df5_dbscan_eps500_null)
+n_noise_dbscan_eps500_5
+``` 
+Leaflet map for MinPts=5, eps=500m
+```{r leaflet-map-dbscan-k5, message=FALSE}
+# Get the convex hulls for each cluster 
+cluster_hulls_dbscan_5 <- get_cluster_hulls(df5_dbscan_eps500)
+# Create the leaflet map
+map_dbscan_k5_eps500 <-leaflet_map(cluster_hulls_dbscan_5, df5_dbscan_eps500, df5_dbscan_eps500_null)
+# saveWidget(map_dbscan_k5_eps500, file="results/map_DBSCAN_MinPt5_eps500.html")
+map_dbscan_k5_eps500
+``` 
+
+## MinPts=10 with eps=500m
+Load dataframe with coordinates and cluster assignments
+```{r dbscan_eps500_10, message=FALSE}
+res10_dbscan_eps500 <- readRDS("results/dbscan_results_eps500_MinPts10.rds")
+# Create a data frame from the spatial points
+df10_dbscan_eps500 <- create_df(res10_dbscan_eps500,xy)
+head(df10_dbscan_eps500)
+dim(df10_dbscan_eps500)
+```
+Number of clusters (excluding noise):
+```{r num-clusters-dbscan-eps500_10, message=FALSE}
+k10_dbscan_eps500 <- length(unique(df10_dbscan_eps500$cluster)) - 1
+k10_dbscan_eps500
+```
+Number of noise points:
+```{r num-noise-dbscan-eps500_10, message=FALSE}
+df10_dbscan_eps500_null <- create_df_null(df10_dbscan_eps500)
+n_noise_dbscan_eps500_10 <- nrow(df10_dbscan_eps500_null)
+n_noise_dbscan_eps500_10
+```
+Leaflet map for MinPts=10, eps=500m 
+```{r leaflet-map-dbscan-k10, message=FALSE}
+# Get the convex hulls for each cluster 
+cluster_hulls_dbscan_10 <- get_cluster_hulls(df10_dbscan_eps500)
+# Create the leaflet map
+map_dbscan_k10_eps500 <-leaflet_map(cluster_hulls_dbscan_10, df10_dbscan_eps500, df10_dbscan_eps500_null)
+# saveWidget(map_dbscan_k10_eps500, file="results/map_DBSCAN_MinPt10_eps500.html")
+map_dbscan_k10_eps500
+
+
+
+```
+<!-- ## MinPts=15 with eps=500m
+Load dataframe with coordinates and cluster assignments
+```{r dbscan_eps500_15, message=FALSE}
+res15_dbscan_eps500 <- readRDS("results/dbscan_results_eps500_MinPts15.rds")
+# Create a data frame from the spatial points
+df15_dbscan_eps500 <- create_df(res15_dbscan_eps500,xy)
+head(df15_dbscan_eps500)
+dim(df15_dbscan_eps500)
+```   
+Number of clusters (excluding noise):
+```{r num-clusters-dbscan-eps500_15, message=FALSE}
+k15_dbscan_eps500 <- length(unique(df15_dbscan_eps500$cluster)) - 1
+k15_dbscan_eps500
+```
+Number of noise points:
+```{r num-noise-dbscan-eps500_15, message=FALSE}
+df15_dbscan_eps500_null <- create_df_null(df15_dbscan_eps500)
+n_noise_dbscan_eps500_15 <- nrow(df15_dbscan_eps500_null)
+n_noise_dbscan_eps500_15
+```
+Leaflet map for MinPts=15, eps=500m
+```{r leaflet-map-dbscan-k15, message=FALSE}
+# Get the convex hulls for each cluster 
+cluster_hulls_dbscan_15 <- get_cluster_hulls(df_dbscan_eps500_15)
+# Create the leaflet map
+map_dbscan_k15_eps500 <-leaflet_map(cluster_hulls_dbscan_15, df_dbscan_eps500_15, df_dbscan_eps500_15_null)
+# saveWidget(map_dbscan_k15_eps500, file="results/map_DBSCAN_MinPt15_eps500.html")
+map_dbscan_k15_eps500
+```
+## MinPts=20 with eps=500m
+Load dataframe with coordinates and cluster assignments
+```{r dbscan_eps500_20, message=FALSE}
+res20_dbscan_eps500 <- readRDS("results/dbscan_results_eps500_MinPts20.rds")
+# Create a data frame from the spatial points
+df20_dbscan_eps500 <- create_df(res20_dbscan_eps500,xy)
+head(df20_dbscan_eps500)
+dim(df20_dbscan_eps500)
+```
+Number of clusters (excluding noise):
+```{r num-clusters-dbscan-eps500_20, message=FALSE}
+k20_dbscan_eps500 <- length(unique(df20_dbscan_eps500$cluster)) - 1
+k20_dbscan_eps500
+```
+Number of noise points:
+```{r num-noise-dbscan-eps500_20, message=FALSE}
+df20_dbscan_eps500_null <- create_df_null(df20_dbscan_eps500)
+n_noise_dbscan_eps500_20 <- nrow(df20_dbscan_eps500_null)
+n_noise_dbscan_eps500_20
+```
+Leaflet map for MinPts=20, eps=500m
+```{r leaflet-map-dbscan-k20, message=FALSE}
+# Get the convex hulls for each cluster 
+cluster_hulls_dbscan_20 <- get_cluster_hulls(df_dbscan_eps500_20)
+# Create the leaflet map
+map_dbscan_k20_eps500 <-leaflet_map(cluster_hulls_dbscan_20, df_dbscan_eps500_20, df_dbscan_eps500_20_null)
+# saveWidget(map_dbscan_k20_eps500, file="results/map_DBSCAN_MinPt20_eps500.html")
+map_dbscan_k20_eps500
+``` -->
+
+<!-- 
+
+## Summary statistics for DBSCAN approach with eps=500m and various MinPts values
+ <br>
+
+```{r summary-clusters_eps500, echo=FALSE, message=FALSE}
+
+tab <- data.frame(MinPts = c(4, 5, 10, 15, 20),
+          N_clusters = c(k4_dbscan_eps500, k5_dbscan_eps500, k10_dbscan_eps500, k15_dbscan_eps500, k20_dbscan_eps500),
+          N_noise_points = c(n_noise_k4_dbscan_eps500, n_noise_k5_dbscan_eps500, n_noise_k10_dbscan_eps500, n_noise_k15_dbscan_eps500, n_noise_k20_dbscan_eps500),
+          Max_cluster_size = c(max(df4_dbscan_eps500$Pop[df4_dbscan_eps500$cluster != 0]),
+                                max(df5_dbscan_eps500$Pop[df5_dbscan_eps500$cluster != 0]),
+                                max(df10_dbscan_eps500$Pop[df10_dbscan_eps500$cluster != 0]),
+                                max(df15_dbscan_eps500$Pop[df15_dbscan_eps500$cluster != 0]),
+                                max(df20_dbscan_eps500$Pop[df20_dbscan_eps500$cluster != 0])),
+          Min_cluster_size = c(min(df4_dbscan_eps500$Pop[df4_dbscan_eps500$cluster != 0]),
+                                min(df5_dbscan_eps500$Pop[df5_dbscan_eps500$cluster != 0]),
+                                min(df10_dbscan_eps500$Pop[df10_dbscan_eps500$cluster != 0]),
+                                min(df15_dbscan_eps500$Pop[df15_dbscan_eps500$cluster != 0]),
+                                min(df20_dbscan_eps500$Pop[df20_dbscan_eps500$cluster != 0]))
+)
+
+# Format the table with better styling and more descriptive column names
+knitr::kable(
+  tab %>% 
+    rename(
+      "MinPts Parameter" = MinPts,
+      "Number of Clusters" = N_clusters,
+      "Unclustered Points" = N_noise_points,
+      "Largest Cluster Size" = Max_cluster_size,
+      "Smallest Cluster Size" = Min_cluster_size
+    ),
+  # caption = "Summary statistics for HDBSCAN clustering with various MinPts values",
+  align = "c",
+  digits = 0,
+  format = "html",
+) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE
+  ) %>%
+  kableExtra::row_spec(which.max(tab$N_clusters), bold = TRUE, background = "#e6f7ff") %>%
+  kableExtra::row_spec(which.min(tab$N_noise_points), bold = TRUE, background = "#e6fff7")
+```
+
+<br> -->

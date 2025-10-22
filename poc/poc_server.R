@@ -12,84 +12,54 @@ library(dbscan)
 # Load ggplot2 for plotting
 library(ggplot2)
 
-# setwd("/home/ar17162/Documents/gambling_neighbourhoods")
-# read geo data
-# gc <- read.csv("data/premises-licence-register_06082025.csv", header = TRUE)
-# geo <- read.csv("data/ONSPD_Online_Latest_Centroids_1060347089026503474.csv", header = TRUE)
-
-# #' Function to clean data by merging gc_data with geo_data
-# #' @param gc_data Data frame containing gambling premises data
-# #' @param geo_data Data frame containing geographical data
-# #' @return Merged data frame with cleaned and relevant columns
-# #' @examples
-# #' clean_data(gc_data, geo_data)
-# clean_data <- function(gc_data, geo_data) {
-#   # Assuming gc and geo are data frames with appropriate columns
-#   #  rename columns for clarity 
-#   geo_data["Postcode"] <- geo_data$PCD
-#   # select relevant columns
-#   geo_data <- geo_data[, c("Postcode", "LAT", "LONG", "IMD", "LSOA21")]
-#   #  remove spaces between postcode elements
-#   geo_data$Postcode <- gsub(" ", "", geo_data$Postcode)
-#   gc_data$Postcode <- gsub(" ", "", gc_data$Postcode)
-#   # add ID column to gc_data
-#   gc_data$ID <- seq_len(nrow(gc_data))
-#   #  subset geo data when Postcode matches
-#   geo_data <- geo_data[geo_data$Postcode %in% gc_data$Postcode, ]
-#   # merge gc_data with geo_data on Postcode
-#   merged_data <- merge(gc_data, geo_data, by = "Postcode", all.x = TRUE)
-#   # some postcodes were wrongly formatted. Around 17 rows
-#   # Some more cleaning is needed (TODO)
-#   #  But for now I will remove the rows with NA in Lat and Long
-#   merged_data <- merged_data[which(merged_data$LAT!="NA"),]
-#   # return the cleaned and merged data
-#   return(merged_data)
-# }
-
-# data <- clean_data(gc,geo)
-
-
-# # 1. Make spatialpointsdataframe
-# xy <- sp::SpatialPointsDataFrame(
-#   matrix(c(data$LONG, data$LAT),ncol=2),
-#   data.frame(ID=data$ID),
-#   proj4string=sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84"))
-
-# saveRDS(xy,file = "data/xy.rds")
-# print("SpatialPointsDataFrame saved to data/xy.rds")
-
-
-# # 2. Generate a distance matrix.
-# mdist <- geosphere::distm(xy)
-
-# saveRDS(mdist,file = "data/mdist.rds")
-# print("Distance matrix saved to data/mdist.rds")
-# 3. Run HDBSCAN clustering
-
-
-# coord <- as.data.frame(sp::coordinates(xy))
-# wss <- (nrow(coord)-1)*sum(apply(coord,2,var))
-
-# K=50
-# for (i in 2:K) wss[i] <- sum(kmeans(coord,centers = i)$withinss)
-
-# pdf("figures/elbow_plot.pdf")
-# plot(1:K, wss, type="b", xlab="K",
-#      ylab="Within groups sum of squares")
-# dev.off()
 
 # HDBSCAN clustering
 # Using Sys.time to measure execution time
 # trying with minPts = 10
 mdist <- readRDS("data/mdist.rds")
 
+# # Perform HDBSCAN clustering for different MinPts values and save results
+# for (MinPts in c(2:5,10)) {
+#   start_time <- Sys.time()
+#   print(paste("MinPts =", MinPts))
+#   res <- dbscan::hdbscan(mdist, minPts = MinPts, verbose = TRUE)
+#   saveRDS(c(res), file = paste0("results/hdbscan_results_", MinPts, ".rds"))
+#   print(paste0("HDBSCAN results saved to results/hdbscan_results_", MinPts, ".rds"))
+#   end_time <- Sys.time()
+#   print(paste("Execution time:", end_time - start_time))
+# }
 
-for (MinPts in c(2:5,10)) {
-  print(Sys.time())
+# Perform hybrid HDBSCAN clustering with eps=500m for different MinPts values and save results
+
+# eps=500
+# for (MinPts in c(4:5, 10, 15, 20)) {
+#   start_time <- Sys.time()
+#   print(paste("MinPts =", MinPts))
+#   res <- dbscan::hdbscan(mdist, minPts = MinPts, cluster_selection_epsilon = eps, verbose = TRUE)
+#   saveRDS(c(res), file = paste0("results/hdbscan_results_eps", eps, "_MinPts", MinPts, ".rds"))
+#   print(paste0("HDBSCAN results saved to results/hdbscan_results_eps_", eps, "_MinPts_", MinPts, ".rds"))
+#   end_time <- Sys.time()
+#   exec_time <- end_time - start_time
+#   print(paste("Execution time:", exec_time))
+#   # save execution time into an unique file and append on a matrix
+#   write.table(data.frame(MinPts = MinPts, ExecutionTime = exec_time, EPS = eps), file = "results/hdbscan_execution_times.csv", append = TRUE, sep = ",", col.names = !file.exists("results/hdbscan_execution_times.csv"), row.names = FALSE)
+
+# }
+
+
+# DBSCAN clustering
+# Using Sys.time to measure execution time
+eps=500
+for (MinPts in c(4:5, 10, 15, 20)) {
+  start_time <- Sys.time()
   print(paste("MinPts =", MinPts))
-  res <- dbscan::hdbscan(mdist, minPts = MinPts, verbose = TRUE)
-  saveRDS(c(res), file = paste0("results/hdbscan_results_", MinPts, ".rds"))
-  print(paste0("HDBSCAN results saved to results/hdbscan_results_", MinPts, ".rds"))
-  print(Sys.time())
-}
+  res <- dbscan::dbscan(mdist, minPts = MinPts, eps = eps)
+  saveRDS(c(res), file = paste0("results/dbscan_results_eps", eps, "_MinPts", MinPts, ".rds"))
+  print(paste0("DBSCAN results saved to results/dbscan_results_eps", eps, "_MinPts", MinPts, ".rds"))
+  end_time <- Sys.time()
+  exec_time <- end_time - start_time
+  print(paste("Execution time:", exec_time))
+  # save execution time into an unique file and append on a matrix
+  write.table(data.frame(MinPts = MinPts, ExecutionTime = exec_time, EPS = eps), file = "results/dbscan_execution_times.csv", append = TRUE, sep = ",", col.names = !file.exists("results/dbscan_execution_times.csv"), row.names = FALSE)
 
+}

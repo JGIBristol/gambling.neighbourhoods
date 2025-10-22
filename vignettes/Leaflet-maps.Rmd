@@ -28,11 +28,11 @@ load_all()
 ```
 
 
-# Gambling neighbourhoods using leaflet maps
+# Gambling neighbourhoods using HDBSCAN
 
-This vignette demonstrates how to create interactive maps using the `leaflet` package in R to visualize the gambling neighbourhoods. In here we will load the geographical data containing the coordinates of gambling premises and the clustering results from HDBSCAN for different values of MinPts (2,3,4,5,10). 
+This vignette demonstrates how to create interactive maps using the `leaflet` package in R to visualize the gambling neighbourhoods. 
+In here we will load the geographical data containing the coordinates of gambling premises and the clustering results from **HDBSCAN** for different values of MinPts (2,3,4,5,10). 
 We will create a separate map for each value of MinPts, showing the cluster centers and the number of gambling premises in each cluster. Clusters are in <span style="color:blue;">**blue**</span> and represented by polygons, each with a popup displaying the cluster ID and the number of gambling premises within that cluster. Each polygon is sized according to the number of gambling premises it contains. Gambling premises inside each cluster are shown also in <span style="color:blue;">**blue**</span>, while unclustered  (noise) points are shown in **black**. Each point (a gambling premise GP) has a popup displaying its ID.
-
 
 ## Load data
 Load the geographical data (spatial points dataframe) containing the coordinates of gambling premises.
@@ -42,7 +42,6 @@ xy <- readRDS("data/xy.rds")
 ```
 
 ## MinPts=2
-
 
 Load dataframe with coordinates and cluster assignments
 ```{r k2, message=FALSE}
@@ -194,7 +193,7 @@ map10
 ```
 <br>
 
-## Summary statistics for HDBSCAN clustering with various MinPts values
+## Summary statistics
 
 <br>
 

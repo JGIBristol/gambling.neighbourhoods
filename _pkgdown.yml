@@ -11,8 +11,12 @@ navbar:
    articles:
       text: vignettes
       menu:
-      - text: "Gambling neighbourhoods maps"
+      # - text: "Data processing and preparation"
+      #   href: articles/data-preparation.html
+      - text: "Gambling neighbourhoods using HDBSCAN"
         href: articles/Leaflet-maps.html
+      - text: "Gambling neighbourhoods using HDBSCAN with EPS"
+        href: articles/HDBSCAN_eps500.html  
    reference:
       text: Functions
       href: reference/index.html

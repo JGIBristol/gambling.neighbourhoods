@@ -2,5 +2,7 @@ pandoc: 3.8.2
 pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
+  DBSCAN_eps500: DBSCAN_eps500.html
+  HDBSCAN_eps500: HDBSCAN_eps500.html
   Leaflet-maps: Leaflet-maps.html
-last_built: 2025-10-16T14:46Z
+last_built: 2025-10-21T15:57Z
