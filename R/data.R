@@ -1,10 +1,11 @@
 #' Clean and merge gambling premises data with geographical data
 #' @param gc_data Data frame containing gambling premises data
 #' @param geo_data Data frame containing geographical data
-#' @return A merged data frame with cleaned and relevant columns)
+#' @param postcode_area Optional string to filter postcodes by area (e.g., "BS" for Bristol). Default is NULL (no filtering). # nolint
+#' @return A merged data frame with cleaned and relevant columns
 #' @import dplyr
 #' @export
-clean_data <- function(gc_data, geo_data) {
+clean_data <- function(gc_data, geo_data, postcode_area = NULL) {
   # Assuming gc and geo are data frames with appropriate columns
   #  rename columns for clarity 
   geo_data["Postcode"] <- geo_data$PCD
@@ -15,6 +16,19 @@ clean_data <- function(gc_data, geo_data) {
   gc_data$Postcode <- gsub(" ", "", gc_data$Postcode)
   # add ID column to gc_data
   gc_data$ID <- seq_len(nrow(gc_data))
+  
+  if (!is.null(postcode_area)) {
+    # filter gc_data to only include postcodes starting with the specified area
+    if (length(postcode_area)>1) {
+      data_sub <- gc_data[0, ]
+      for (area in postcode_area) {
+        data_sub <- rbind(data_sub, gc_data[grep(paste0("^", area, "[0-9]"), gc_data$Postcode), ])
+      }
+    }
+    } else {
+    data_sub <- gc_data[grep(paste0("^", postcode_area, "[0-9]"), gc_data$Postcode), ]
+    }
+  gc_data <- data_sub
   #  subset geo data when Postcode matches
   geo_data <- geo_data[geo_data$Postcode %in% gc_data$Postcode, ]
   # merge gc_data with geo_data on Postcode
@@ -23,6 +37,7 @@ clean_data <- function(gc_data, geo_data) {
   # Some more cleaning is needed (TODO)
   #  But for now I will remove the rows with NA in Lat and Long
   merged_data <- merged_data[which(merged_data$LAT!="NA"),]
+  
   # return the cleaned and merged data
   return(merged_data)
 }
