@@ -27,11 +27,11 @@ library(devtools)
 load_all()
 ```
 
-This vignette demonstrates how to create interactive maps using the `leaflet` package in R to visualize the gambling neighbourhoods identified using an hybrid approach combining HDBSCAN clustering with a fixed eps=500m specifically for London.
+This vignette demonstrates how to create interactive maps using the `leaflet` package in R to visualize the gambling neighbourhoods identified using an hybrid approach combining HDBSCAN clustering specifically for London.
 Check the main vignette [HDBSCAN_eps500](HDBSCAN_eps500.html) for general details about the methodology and the approach used.
 
 
-📝 **Note:** Results for MinPts=2 and 3 are not shown here as they produced a very high number of clusters (over 100) which are difficult to visualise and interpret on a map.
+📝 **Note:** Results for MinPts=2 and 3 are not shown here as they produced very large clusters which are difficult to visualise and interpret on a map.
 
 <br>
 
