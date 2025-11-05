@@ -4,15 +4,17 @@
 \alias{clean_data}
 \title{Clean and merge gambling premises data with geographical data}
 \usage{
-clean_data(gc_data, geo_data)
+clean_data(gc_data, geo_data, postcode_area = NULL)
 }
 \arguments{
 \item{gc_data}{Data frame containing gambling premises data}
 
 \item{geo_data}{Data frame containing geographical data}
+
+\item{postcode_area}{Optional string to filter postcodes by area (e.g., "BS" for Bristol). Default is NULL (no filtering). # nolint}
 }
 \value{
-A merged data frame with cleaned and relevant columns)
+A merged data frame with cleaned and relevant columns
 }
 \description{
 Clean and merge gambling premises data with geographical data

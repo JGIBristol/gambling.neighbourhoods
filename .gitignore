@@ -50,4 +50,5 @@ mdist.rds
 /vignettes/data
 *.rds
 results/
-.gitignore
+
+poc/poc_server.R

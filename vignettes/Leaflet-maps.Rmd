@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   echo = TRUE,
-  eval = FALSE, # change to TRUE to produce the vignette and FALSE for the package build
+  eval = TRUE, # change to TRUE to produce the vignette and FALSE for the package build
   comment = "#>"
 )
 ```

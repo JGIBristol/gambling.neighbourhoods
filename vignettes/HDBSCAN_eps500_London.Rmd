@@ -1,0 +1,113 @@
+---
+title: "HDBSCAN London"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{HDBSCAN London}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  echo = FALSE,
+  eval= TRUE, # change to TRUE to produce the vignette and FALSE for the package build
+  comment = "#>"
+)
+```
+
+```{r setup, echo=FALSE, message=FALSE}
+library(leaflet)
+library(htmltools)
+library(sp)
+library(dplyr)
+library(htmlwidgets)
+# library(gambling.neighbourhoods)
+library(devtools)
+load_all()
+```
+
+This vignette demonstrates how to create interactive maps using the `leaflet` package in R to visualize the gambling neighbourhoods identified using an hybrid approach combining HDBSCAN clustering with a fixed eps=500m specifically for London.
+Check the main vignette [HDBSCAN_eps500](HDBSCAN_eps500.html) for general details about the methodology and the approach used.
+
+
+📝 **Note:** Results for MinPts=2 and 3 are not shown here as they produced a very high number of clusters (over 100) which are difficult to visualise and interpret on a map.
+
+<br>
+
+## Load data
+Load the geographical data (spatial points dataframe) containing the coordinates of gambling premises in London.  
+```{r load-data, echo=TRUE, message=FALSE}
+xy_london <- readRDS("data/xy_london.rds")
+``` 
+
+
+## MinPts=4 
+```{r k4_eps500, message=FALSE}
+res4_eps500 <- readRDS("results/hdbscan_results_eps500_MinPts4_london.rds")
+# Create a data frame from the spatial points   
+df4_eps500 <- create_df(res4_eps500,xy_london)
+head(df4_eps500)
+dim(df4_eps500)
+```
+Number of clusters (excluding noise):
+```{r num-clusters-k4-eps500, message=FALSE}
+k4_eps500 <- length(unique(df4_eps500$cluster)) - 1
+k4_eps500
+```
+Number of noise points:
+```{r num-noise-k4-eps500, message=FALSE}
+df4_eps500_null <- create_df_null(df4_eps500)
+n_noise_k4_eps500 <- nrow(df4_eps500_null)
+n_noise_k4_eps500
+```
+Leaflet map 
+```{r leaflet-map-k4, message=FALSE}
+# Get the convex hulls for each cluster
+cluster_hulls4 <- get_cluster_hulls(df4_eps500)
+# Create the leaflet map
+map_k4_eps500 <-leaflet_map(cluster_hulls4, df4_eps500, df4_eps500_null)
+# saveWidget(map_k4_eps500, file="results/map_MinPt4_eps500.html")
+map_k4_eps500
+```
+## MinPts=5 
+```{r k5_eps500, message=FALSE}
+res5_eps500 <- readRDS("results/hdbscan_results_eps500_MinPts5_london.rds")
+# Create a data frame from the spatial points
+df5_eps500 <- create_df(res5_eps500,xy_london)
+head(df5_eps500)
+dim(df5_eps500)
+```
+Number of clusters (excluding noise):
+```{r num-clusters-k5-eps500, message=FALSE}
+k5_eps500 <- length(unique(df5_eps500$cluster)) - 1
+k5_eps500
+```
+Number of noise points:
+```{r num-noise-k5-eps500, message=FALSE}
+df5_eps500_null <- create_df_null(df5_eps500)
+n_noise_k5_eps500 <- nrow(df5_eps500_null)
+n_noise_k5_eps500
+```
+Leaflet map
+```{r leaflet-map-k5, message=FALSE}
+# Get the convex hulls for each cluster
+cluster_hulls5 <- get_cluster_hulls(df5_eps500)
+# Create the leaflet map
+map_k5_eps500 <-leaflet_map(cluster_hulls5, df5_eps500, df5_eps500_null)
+# saveWidget(map_k5_eps500, file="results/map_MinPt5_eps500.html")
+map_k5_eps500
+```
+
+## Summary statistics
+Summary table with number of clusters and noise points for each MinPts value.
+
+```{r summary-table, message=FALSE}
+summary_table <- data.frame(
+  MinPts = c(4, 5),
+  Num_Clusters = c(k4_eps500, k5_eps500),
+  Num_Noise_Points = c(n_noise_k4_eps500, n_noise_k5_eps500)
+)
+summary_table
+```
+

@@ -7,3 +7,6 @@
 ^README\.Rmd$
 ^results$
 ^_pkgdown\.yml$
+^hdbscan_python$
+^vignetttes/data$
+^vignettes/results$
