@@ -16,7 +16,12 @@ navbar:
       - text: "Gambling neighbourhoods using HDBSCAN"
         href: articles/Leaflet-maps.html
       - text: "Gambling neighbourhoods using HDBSCAN with EPS"
+    
         href: articles/HDBSCAN_eps500.html  
+      - text: "Gambling neighbourhoods using HDBSCAN for Bristol"
+        href: articles/HDBSCAN_eps500_Bristol.html
+      - text: "Gambling neighbourhoods using HDBSCAN for London"
+        href: articles/HDBSCAN_eps500_London.html
    reference:
       text: Functions
       href: reference/index.html
