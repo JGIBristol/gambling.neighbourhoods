@@ -15,19 +15,24 @@ Depends:
     leaflet,
     R (>= 4.0.0)
 Imports:
-    sp
-Suggests: 
-    devtools,
-    kableExtra,
+    sp,
     ggplot2,
     htmltools,
     htmlwidgets,
+    mapview,
+    webshot,
     knitr,
     rmarkdown,
     roxygen2,
     sf,
     testthat,
-    usethis
+    usethis,
+    SegmentR,
+    imager,
+    RColorBrewer
+Suggests: 
+    devtools,
+    kableExtra
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
