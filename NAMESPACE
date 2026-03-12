@@ -2,7 +2,10 @@
 
 export(clean_data)
 export(create_df)
+export(create_df_from_main)
 export(leaflet_map)
+export(subset_by_la_code)
+export(subset_by_postcode)
 import(dplyr)
 import(leaflet)
 import(sp)
