@@ -1,140 +1,61 @@
 #' Clean and merge gambling premises data with geographical data
 #' @param gc_data Data frame containing gambling premises data
 #' @param geo_data Data frame containing geographical data
-#' @param postcode_area Optional string to filter postcodes by area (e.g., "BS" for Bristol). Default is NULL (no filtering). # nolint
 #' @return A merged data frame with cleaned and relevant columns
 #' @import dplyr
 #' @export
-clean_data <- function(gc_data, geo_data, postcode_area = NULL) {
+clean_data <- function(gc_data, geo_data) {
   # Assuming gc and geo are data frames with appropriate columns
   #  rename columns for clarity 
   geo_data["Postcode"] <- geo_data$PCD
   # select relevant columns
-  geo_data <- geo_data[, c("Postcode", "LAT", "LONG", "IMD", "LSOA21")]
+  geo_data <- geo_data[, c("Postcode", "LAT", "LONG", "IMD", "LSOA21", "MSOA21", "OSLAUA")]
   #  remove spaces between postcode elements
   geo_data$Postcode <- gsub(" ", "", geo_data$Postcode)
   gc_data$Postcode <- gsub(" ", "", gc_data$Postcode)
+  #  all gc values in capital letters
+  gc_data$Postcode <- toupper(gc_data$Postcode)
   # add ID column to gc_data
   gc_data$ID <- seq_len(nrow(gc_data))
-  
-  if (!is.null(postcode_area)) {
-    # filter gc_data to only include postcodes starting with the specified area
-    if (length(postcode_area)>1) {
-      data_sub <- gc_data[0, ]
-      for (area in postcode_area) {
-        data_sub <- rbind(data_sub, gc_data[grep(paste0("^", area, "[0-9]"), gc_data$Postcode), ])
-      }
-    }
-    } else {
-    data_sub <- gc_data[grep(paste0("^", postcode_area, "[0-9]"), gc_data$Postcode), ]
-    }
-  gc_data <- data_sub
   #  subset geo data when Postcode matches
   geo_data <- geo_data[geo_data$Postcode %in% gc_data$Postcode, ]
   # merge gc_data with geo_data on Postcode
   merged_data <- merge(gc_data, geo_data, by = "Postcode", all.x = TRUE)
   # some postcodes were wrongly formatted. Around 17 rows
-  # Some more cleaning is needed (TODO)
-  #  But for now I will remove the rows with NA in Lat and Long
+  #  Remove the rows with NA in Lat and Long
   merged_data <- merged_data[which(merged_data$LAT!="NA"),]
-  
   # return the cleaned and merged data
   return(merged_data)
 }
 
-#' Create a Leaflet map with cluster hulls and points
-#' @param cluster_hulls A list of data frames, each containing the convex hull for a cluster
-#' @param df Data frame containing clustered points with columns LONG, LAT, cluster
-#' @param df_null Data frame containing unclustered points with columns LONG, LAT, ID
-#' @return A leaflet map object
-#' @import leaflet
-#' @export
-leaflet_map <- function(cluster_hulls, df, df_null) {
-  m <-leaflet() %>% addTiles() 
-    # Add polygons for each cluster hull
-  for (c in names(cluster_hulls)) {
-    hull <- cluster_hulls[[c]]
-    # Count the number of points in this cluster
-    cluster_count <- sum(df$cluster == c)
-    m <- m %>% 
-      addPolygons(
-        lng = hull$LONG, 
-        lat = hull$LAT, 
-        color = "blue",
-        weight = 1,
-        opacity = 1,
-        fillOpacity = 0.2,
-        popup = paste("Cluster ID:", c, "<br>", "Number of premises:", cluster_count)
-      )
-  }
-  m <- m %>%
-    # Add circle markers for individual points
-    addCircleMarkers(
-      data = df,
-      lng = ~LONG,
-      lat = ~LAT,
-      color = "blue",
-      popup = ~paste("Cluster ID:", cluster,"<br>", "GP ID:", ID),
-      radius = 3,
-      stroke = FALSE,
-      fillOpacity = 0.8
-    ) %>%
-    addCircleMarkers(
-      data = df_null,
-      lng = ~LONG,
-      lat = ~LAT,
-      color = "black",
-      popup = ~paste("Unclustered: GP ID", ID),
-      radius = 3,
-      stroke = FALSE,
-      fillOpacity = 1.0
-    )
-  return(m)
-}
 
-#' Create a data frame from clustering results and spatial data
-#' @param res Clustering results
-#' @param xy Spatial data (points)
-#' @return A data frame with coordinates and cluster information
-#' @import sp
+#' Subset data frame by postcode area
+#' @param data Data frame containing gambling premises data with a Postcode column
+#' @param postcode_area String to filter postcodes by area (e.g., "BS" for Bristol)
+#' @return A subset of the data frame with postcodes starting with the specified area
 #' @import dplyr
 #' @export
-create_df <- function(res, xy) {
-  df <- as.data.frame(sp::coordinates(xy))
-  df$cluster <- as.factor(res$cluster)
-  df$ID <-  xy@data$ID
-  df <- dplyr::rename(df, LONG = coords.x1, LAT = coords.x2) %>%
-    group_by(cluster) %>%
-    mutate(Pop = ifelse(cluster == 0, 0, n())) %>%
-    ungroup()
-  return(df)
-}
-
-#' create a data frame containing the unnclustered points
-#' @param df Data frame containing clustered points with columns LONG, LAT, cluster, ID
-#' @return A data frame with unclustered points (cluster == 0)
-#' @import dplyr
-create_df_null <- function(df) {
-  df_null <- df %>%
-    filter(cluster == 0)
-  return(df_null)
-}
-
-#' Get convex hulls for each cluster
-#' @param df Data frame containing clustered points with columns LONG, LAT, cluster
-#' @return A list of data frames, each containing the convex hull for a cluster
-#' @import dplyr
-#' @import sp
-get_cluster_hulls <- function(df) {
-  clusters <- unique(df$cluster[df$cluster != 0])
-  hulls <- list()
-  for (c in clusters) {
-    cluster_points <- df[df$cluster == c, c("LONG", "LAT")]
-    if (nrow(cluster_points) >= 3) {
-      hull_indices <- chull(cluster_points)
-      hull_indices <- c(hull_indices, hull_indices[1])
-      hulls[[as.character(c)]] <- cluster_points[hull_indices, ]
+subset_by_postcode <- function(data, postcode_area) { 
+  if (length(postcode_area)>1) {
+    data_sub <- data[0, ]
+    for (area in postcode_area) {
+      data_sub <- rbind(data_sub, data[grep(paste0("^", area, "[0-9]"),data$Postcode), ])
+    } 
+  } else {
+    data_sub <- data[grep(paste0("^", postcode_area, "[0-9]"), data$Postcode), ]
     }
-  }
-  return(hulls)
+  return(data_sub)
 }
+
+#' Subset by Local Authority code
+#' @param data Data frame containing gambling premises data with an OSLAUA column
+#' @param la_code String representing the Local Authority code to filter by (e.g., "E06000023" for Bristol)
+#' @return A subset of the data frame with rows matching the specified Local Authority code
+#' @import dplyr
+#' @export
+subset_by_la_code <- function(data, la_code) { 
+  data_sub <- data[data$OSLAUA == la_code, ]
+  return(data_sub)
+}
+
+
